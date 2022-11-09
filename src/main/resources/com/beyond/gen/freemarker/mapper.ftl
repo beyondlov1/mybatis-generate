@@ -6,6 +6,8 @@ import ${import};
 
 /**
 * generated
+* @table ${tableFullName}
+* @entity ${entityName}
 */
 @Mapper
 public interface ${mapperName} <#if superMapperName?? && superMapperName != ''>extends ${superMapperName} </#if>{

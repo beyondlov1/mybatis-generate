@@ -16,6 +16,7 @@ public class MapperEntity {
     private String mapperName;
     private String superMapperName;
     private String entityName;
+    private String tableFullName;
     private List<MethodEntity> methods = new ArrayList<MethodEntity>();
 
     @Data
