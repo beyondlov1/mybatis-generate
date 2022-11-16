@@ -8,6 +8,7 @@ import ${import};
 * generated
 */
 @Data
+@TableName("${tableFullName}")
 public class ${className} {
 
 <#if id??>
@@ -17,6 +18,7 @@ public class ${className} {
     * ${id.comment}
     */
     </#if>
+    @TableId(value = "${id.columnName}",type = IdType.AUTO)
     private ${id.type} ${id.name};
 
 </#if>
@@ -28,6 +30,7 @@ public class ${className} {
     * ${field.comment}
     */
     </#if>
+    @TableField(value = "${field.columnName}")
     private ${field.type} ${field.name};
 
 </#list>

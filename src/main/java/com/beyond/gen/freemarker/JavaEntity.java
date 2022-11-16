@@ -16,6 +16,9 @@ public class JavaEntity {
     private String className;
     private List<FieldEntity> fields = new ArrayList<FieldEntity>();
 
+    private String tableFullName;
+    private FieldEntity id = new FieldEntity();
+
 
     @Data
     public static class FieldEntity {
@@ -38,12 +41,24 @@ public class JavaEntity {
             fieldEntity4Gen.setComment(field.getComment());
             if (needConst){
                 fieldEntity4Gen.setColumnConstName(("COL_"+StringUtils.humpToLine(field.getName())).toUpperCase());
-                fieldEntity4Gen.setColumnName(StringUtils.humpToLine(field.getName()));
             }
+            fieldEntity4Gen.setColumnName(StringUtils.humpToLine(field.getName()));
             fieldEntity4Gens.add(fieldEntity4Gen);
         }
         javaEntity4Gen.setFields(fieldEntity4Gens);
 
+        if (id != null){
+            JavaEntity4Gen.FieldEntity4Gen id4Gen = new JavaEntity4Gen.FieldEntity4Gen();
+            id4Gen.setName(id.getName());
+            id4Gen.setType(id.getType());
+            id4Gen.setComment(id.getComment());
+            if (needConst){
+                id4Gen.setColumnConstName(("COL_"+StringUtils.humpToLine(id.getName())).toUpperCase());
+            }
+            id4Gen.setColumnName(StringUtils.humpToLine(id.getName()));
+            javaEntity4Gen.setId(id4Gen);
+        }
+        javaEntity4Gen.setTableFullName(tableFullName);
         return javaEntity4Gen;
     }
 

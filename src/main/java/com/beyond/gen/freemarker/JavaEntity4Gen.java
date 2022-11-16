@@ -16,6 +16,9 @@ public class JavaEntity4Gen {
     private String className;
     private List<FieldEntity4Gen> fields = new ArrayList<FieldEntity4Gen>();
 
+    private String tableFullName;
+    private FieldEntity4Gen id;
+
     @Data
     public static class FieldEntity4Gen {
         private String name;
