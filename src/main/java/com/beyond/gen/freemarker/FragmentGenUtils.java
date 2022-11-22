@@ -85,7 +85,7 @@ public class FragmentGenUtils {
                 }
                 conditions.add(String.format("%s in\n" +
                         "              <foreach collection=\"%s\" item=\"item\" separator=\",\" open=\"(\" close=\")\">\n" +
-                        "                  #{{item}}\n" +
+                        "                  #{item}\n" +
                         "              </foreach>", col, field));
             }else {
                 col = com.beyond.gen.freemarker.StringUtils.humpToLine(field);
