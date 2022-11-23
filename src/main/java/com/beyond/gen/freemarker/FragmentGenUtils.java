@@ -1,8 +1,16 @@
 package com.beyond.gen.freemarker;
 
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -118,4 +126,31 @@ public class FragmentGenUtils {
         }
     }
 
+
+    public static String createXmlColumnList(MapperXmlEntity mapperXmlEntity){
+        String templateName = "columnlist.ftl";
+        return fromTemplate(templateName, mapperXmlEntity);
+    }
+
+    public static String createXmlResultMap(MapperXmlEntity mapperXmlEntity){
+        String templateName = "resultmap.ftl";
+        return fromTemplate(templateName, mapperXmlEntity);
+    }
+
+    private static String fromTemplate(String templateName, Object data){
+        String templatePath = "";
+        Configuration configuration = new Configuration(Configuration.VERSION_2_3_28);
+        configuration.setDefaultEncoding("UTF-8");
+        try (StringWriter out = new StringWriter()){
+            //ftl模板文件统一放至 com.lun.template 包下面
+            configuration.setClassForTemplateLoading(FreeMarkerWriter.class, templatePath);
+            Template template = configuration.getTemplate(templateName);
+            //生成文件
+            template.process(data, out);
+            return out.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
