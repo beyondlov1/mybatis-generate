@@ -137,7 +137,7 @@ public class FragmentGenUtils {
         return fromTemplate(templateName, mapperXmlEntity);
     }
 
-    private static String fromTemplate(String templateName, Object data){
+    public static String fromTemplate(String templateName, Object data){
         String templatePath = "";
         Configuration configuration = new Configuration(Configuration.VERSION_2_3_28);
         configuration.setDefaultEncoding("UTF-8");
