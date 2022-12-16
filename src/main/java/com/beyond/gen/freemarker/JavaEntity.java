@@ -17,7 +17,7 @@ public class JavaEntity {
     private List<FieldEntity> fields = new ArrayList<FieldEntity>();
 
     private String tableFullName;
-    private FieldEntity id = new FieldEntity();
+    private FieldEntity id;
 
 
     @Data
