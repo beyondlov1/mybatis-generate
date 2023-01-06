@@ -56,7 +56,7 @@ public class FragmentGenUtils {
     }
 
 
-    private static String generateParams(List<String> fields){
+    public static String generateParams(List<String> fields){
         List<String> conditions = new ArrayList<String>();
         for (String field : fields) {
             String col;
@@ -79,6 +79,11 @@ public class FragmentGenUtils {
         fields.remove("all");
         fields.remove("getAll");
         return String.format("    <select id=\"%s\" resultMap=\"BaseResultMap\">\n        %s \n        where %s \n    </select>", methodName, generateSelect(fullTableName), generateWhere(fields));
+    }
+
+
+    public static String createXmlFragmentFromSql(String mybatisSql,String methodName, String resultType){
+        return String.format("    <select id=\"%s\" resultType=\"%s\">\n        %s \n    </select>", methodName, resultType, mybatisSql);
     }
 
     private static String generateWhere(List<String> fields){
