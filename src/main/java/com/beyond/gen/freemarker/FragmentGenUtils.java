@@ -4,6 +4,7 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
+import rita.RiTa;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -12,7 +13,9 @@ import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,10 +63,10 @@ public class FragmentGenUtils {
         List<String> conditions = new ArrayList<String>();
         for (String field : fields) {
             String col;
-            if(field.endsWith("s") || field.endsWith("List")){
+            if(field.endsWith("List") || isPlurality(field)){
                 conditions.add(String.format("@Param(\"%s\") List<Integer> %s", field, field));
             }else {
-                conditions.add(String.format("@Param(\"%s\") Integer  %s", field, field));
+                conditions.add(String.format("@Param(\"%s\") Integer %s", field, field));
             }
         }
         return String.join(", ",conditions);
@@ -90,11 +93,11 @@ public class FragmentGenUtils {
         List<String> conditions = new ArrayList<String>();
         for (String field : fields) {
             String col;
-            if(field.endsWith("s") || field.endsWith("List")){
-                if (field.endsWith("s")) {
-                    col = StringUtils.substringBeforeLast(com.beyond.gen.freemarker.StringUtils.humpToLine(field), "s");
-                }else{
+            if(field.endsWith("List") || isPlurality(field)){
+                if (field.endsWith("List")) {
                     col = StringUtils.substringBeforeLast(com.beyond.gen.freemarker.StringUtils.humpToLine(field), "_list");
+                }else{
+                    col = singularize(field);
                 }
                 conditions.add(String.format("%s in\n" +
                         "              <foreach collection=\"%s\" item=\"item\" separator=\",\" open=\"(\" close=\")\">\n" +
@@ -107,6 +110,49 @@ public class FragmentGenUtils {
 
         }
         return String.join(" and ",conditions);
+    }
+
+    private static String singularize(String word){
+        if (StringUtils.isBlank(word)) return word;
+        word = word.trim();
+        int subindex = getLastCapIndex(word);
+        String lastCapWord = word.substring(subindex).toLowerCase();
+        if (subindex == 0){
+            return RiTa.singularize(lastCapWord);
+        }
+        return word.substring(0, subindex) + StringUtils.capitalize(RiTa.singularize(lastCapWord));
+    }
+
+    /**
+     * 'people' 这种会标记为 nn, 不是负数, 但是 RiTa.singularize 可以变成单数 'person', 可能是个bug, 但是感觉不重要, 暂时不改
+     * PS: https://github.com/generativa/RiTa  这个库貌似可以识别
+     */
+    private static boolean isPlurality(String word){
+        if (StringUtils.isBlank(word)) return false;
+        word = word.trim();
+        int subindex = getLastCapIndex(word);
+        word = word.substring(subindex).toLowerCase();
+        Map<String, String> result = RiTa.analyze(word);
+        if (Arrays.asList("nns","nnps").contains(result.get("pos"))){
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 找最后一个大写单词
+     * @return
+     */
+    private static int getLastCapIndex(String word){
+        char[] chars = word.toCharArray();
+        int i = chars.length - 1;
+        for (; i >= 0; i--) {
+            if (i == 0) break;
+            if (Character.isUpperCase(chars[i])){
+                break;
+            }
+        }
+        return i;
     }
 
     private static String generateSelect(String fullTableName){
