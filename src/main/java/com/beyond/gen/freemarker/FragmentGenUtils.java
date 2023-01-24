@@ -43,7 +43,8 @@ public class FragmentGenUtils {
      *     if not splitted:
      *         list.append(s)
      */
-    private static String[] SEP_RE_LIST = {"(.*[a-z])By([A-Z].*)", "(.*[a-z])And([A-Z].*)", "(.*[a-z])ForUpdate(.*)"};
+
+    private static Pattern[] SEP_RE_PATTERN_LIST = {Pattern.compile("(.*[a-z])By([A-Z].*)"), Pattern.compile("(.*[a-z])And([A-Z].*)"), Pattern.compile("(.*[a-z])ForUpdate(.*)")};
 
 
     public static String createParamFragment(String methodName){
@@ -51,7 +52,7 @@ public class FragmentGenUtils {
             return null;
         }
         List<String> fields = new ArrayList<>();
-        msplit(SEP_RE_LIST, methodName, fields);
+        msplit(SEP_RE_PATTERN_LIST, methodName, fields);
         fields.remove("get");
         fields.remove("all");
         fields.remove("getAll");
@@ -77,7 +78,7 @@ public class FragmentGenUtils {
             return null;
         }
         List<String> fields = new ArrayList<>();
-        msplit(SEP_RE_LIST, methodName, fields);
+        msplit(SEP_RE_PATTERN_LIST, methodName, fields);
         fields.remove("get");
         fields.remove("all");
         fields.remove("getAll");
@@ -159,12 +160,11 @@ public class FragmentGenUtils {
         return String.format("select <include refid=\"Base_Column_List\"/> from %s", fullTableName);
     }
 
-    private static void msplit(String[] regxs, String s, List<String> list){
+    private static void msplit(Pattern[] regxs, String s, List<String> list){
         if (StringUtils.isBlank(s)) return;
         boolean splitted = false;
-        for (String regx : regxs) {
-            Pattern pattern = Pattern.compile(regx);
-            Matcher matcher = pattern.matcher(s);
+        for (Pattern regx : regxs) {
+            Matcher matcher = regx.matcher(s);
             if (matcher.matches()){
                 msplit(regxs,matcher.group(1), list);
                 msplit(regxs,matcher.group(2), list);
