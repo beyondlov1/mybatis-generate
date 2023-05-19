@@ -98,7 +98,7 @@ public class FragmentGenUtils {
                 if (field.endsWith("List")) {
                     col = StringUtils.substringBeforeLast(com.beyond.gen.freemarker.StringUtils.humpToLine(field), "_list");
                 }else{
-                    col = singularize(field);
+                    col = com.beyond.gen.freemarker.StringUtils.humpToLine(singularize(field));
                 }
                 conditions.add(String.format("%s in\n" +
                         "              <foreach collection=\"%s\" item=\"item\" separator=\",\" open=\"(\" close=\")\">\n" +
