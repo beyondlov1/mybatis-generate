@@ -8,6 +8,7 @@ import rita.RiTa;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -83,6 +84,55 @@ public class FragmentGenUtils {
     public static String createXmlFragmentFromSql(String mybatisSql,String methodName, String resultType){
         return String.format("    <select id=\"%s\" resultType=\"%s\">\n        %s \n    </select>", methodName, resultType, mybatisSql);
     }
+
+    public static String parseAndGenerateWhere(String methodName){
+        List<String> fields = new ArrayList<>();
+        methodName = StringUtils.substringAfter(methodName, "By");
+        msplit(SEP_RE_PATTERN_LIST, methodName, fields);
+        return generateWhere(fields);
+    }
+
+    public static Map<String,Object> parseAndGenerateWhereMap(String methodName){
+        List<String> fields = new ArrayList<>();
+        methodName = StringUtils.substringAfter(methodName, "By");
+        msplit(SEP_RE_PATTERN_LIST, methodName, fields);
+        return generateWhereMap(fields);
+    }
+
+    public static Map<String,Object> generateWhereMap(List<String> fields){
+        Map<String, Object> map = new HashMap<>();
+        List<Map<String, Object>> conditionMaps = new ArrayList<Map<String, Object>>();
+        List<String> conditions = new ArrayList<String>();
+        for (String field : fields) {
+            Map<String, Object> conditionMap = new HashMap<>();
+            String col;
+            if(field.endsWith("List") || isPlurality(field)){
+                if (field.endsWith("List")) {
+                    col = StringUtils.substringBeforeLast(StringUtil.humpToLine(field), "_list");
+                }else{
+                    col = StringUtil.humpToLine(singularize(field));
+                }
+                conditions.add(String.format("%s in\n" +
+                        "              <foreach collection=\"%s\" item=\"item\" separator=\",\" open=\"(\" close=\")\">\n" +
+                        "                  #{item}\n" +
+                        "              </foreach>", col, field));
+                conditionMap.put("isList", true);
+                conditionMap.put("col", col);
+                conditionMap.put("field", field);
+            }else {
+                col = StringUtil.humpToLine(field);
+                conditions.add(String.format("%s = #{%s}", col, field));
+                conditionMap.put("isList", false);
+                conditionMap.put("col", col);
+                conditionMap.put("field", field);
+            }
+            conditionMaps.add(conditionMap);
+        }
+        map.put("where", String.join(" and ",conditions)) ;
+        map.put("conditions", conditionMaps) ;
+        return map;
+    }
+
 
     private static String generateWhere(List<String> fields){
         List<String> conditions = new ArrayList<String>();
