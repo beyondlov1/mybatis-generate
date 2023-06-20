@@ -26,6 +26,7 @@ public class JavaEntity4Gen {
         private String comment;
         private String columnConstName;
         private String columnName;
+        private String columnDefault;
     }
 
 

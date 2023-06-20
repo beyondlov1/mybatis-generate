@@ -28,7 +28,7 @@ public class ${className} {
     * ${field.comment}
     */
     </#if>
-    private ${field.type} ${field.name};
+    private ${field.type} ${field.name}<#if field.columnDefault?? && field.columnDefault != ''> = ${field.columnDefault}</#if>;
 
 </#list>
 

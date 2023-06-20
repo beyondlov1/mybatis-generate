@@ -31,7 +31,7 @@ public class ${className} {
     */
     </#if>
     @TableField(value = "${field.columnName}")
-    private ${field.type} ${field.name};
+    private ${field.type} ${field.name}<#if field.columnDefault?? && field.columnDefault != ''> = ${field.columnDefault}</#if>;
 
 </#list>
 

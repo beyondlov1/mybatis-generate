@@ -2,16 +2,10 @@ package com.beyond.gen.freemarker;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import rita.RiTa;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -96,16 +90,16 @@ public class FragmentGenUtils {
             String col;
             if(field.endsWith("List") || isPlurality(field)){
                 if (field.endsWith("List")) {
-                    col = StringUtils.substringBeforeLast(com.beyond.gen.freemarker.StringUtils.humpToLine(field), "_list");
+                    col = StringUtils.substringBeforeLast(StringUtil.humpToLine(field), "_list");
                 }else{
-                    col = com.beyond.gen.freemarker.StringUtils.humpToLine(singularize(field));
+                    col = StringUtil.humpToLine(singularize(field));
                 }
                 conditions.add(String.format("%s in\n" +
                         "              <foreach collection=\"%s\" item=\"item\" separator=\",\" open=\"(\" close=\")\">\n" +
                         "                  #{item}\n" +
                         "              </foreach>", col, field));
             }else {
-                col = com.beyond.gen.freemarker.StringUtils.humpToLine(field);
+                col = StringUtil.humpToLine(field);
                 conditions.add(String.format("%s = #{%s}", col, field));
             }
 
@@ -173,7 +167,7 @@ public class FragmentGenUtils {
             }
         }
         if (!splitted){
-            list.add(com.beyond.gen.freemarker.StringUtils.deCapitalize(s));
+            list.add(StringUtil.deCapitalize(s));
         }
     }
 
